@@ -1,6 +1,19 @@
 import { createBucketClient } from '@cosmicjs/sdk'
 import { Product, Category, Location, Client, User, Invoice, Quotation, CosmicResponse } from '@/types'
 
+// Validate environment variables before creating client
+if (!process.env.COSMIC_BUCKET_SLUG) {
+  throw new Error('COSMIC_BUCKET_SLUG environment variable is required')
+}
+
+if (!process.env.COSMIC_READ_KEY) {
+  throw new Error('COSMIC_READ_KEY environment variable is required')
+}
+
+if (!process.env.COSMIC_WRITE_KEY) {
+  throw new Error('COSMIC_WRITE_KEY environment variable is required')
+}
+
 export const cosmic = createBucketClient({
   bucketSlug: process.env.COSMIC_BUCKET_SLUG as string,
   readKey: process.env.COSMIC_READ_KEY as string,

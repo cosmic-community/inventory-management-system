@@ -8,6 +8,15 @@ import { authOptions } from '@/lib/auth'
 
 export default async function HomePage() {
   try {
+    // Validate environment variables before proceeding
+    if (!process.env.COSMIC_BUCKET_SLUG || !process.env.COSMIC_READ_KEY) {
+      throw new Error('Missing Cosmic CMS configuration')
+    }
+
+    if (!process.env.NEXTAUTH_SECRET || !process.env.NEXTAUTH_URL) {
+      throw new Error('Missing NextAuth configuration')
+    }
+
     const session = await getServerSession(authOptions)
     
     // Get client-specific data if user is not superadmin
@@ -69,12 +78,35 @@ export default async function HomePage() {
     )
   } catch (error) {
     console.error('Error loading dashboard:', error)
+    
+    // Provide more specific error messages
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    
     return (
       <div className="container py-8">
         <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg">
           <h2 className="text-xl font-semibold mb-2">Error Loading Dashboard</h2>
-          <p>There was an error loading the dashboard. Please check your environment configuration.</p>
-          <p className="text-sm mt-2">Make sure NEXTAUTH_SECRET and NEXTAUTH_URL are set in your environment variables.</p>
+          <p className="mb-4">There was an error loading the dashboard. Please check your environment configuration.</p>
+          
+          <div className="bg-white border border-red-300 rounded p-4 mt-4">
+            <h3 className="font-semibold mb-2">Required Environment Variables:</h3>
+            <ul className="list-disc list-inside space-y-1 text-sm">
+              <li>COSMIC_BUCKET_SLUG</li>
+              <li>COSMIC_READ_KEY</li>
+              <li>COSMIC_WRITE_KEY</li>
+              <li>NEXTAUTH_SECRET (generate with: openssl rand -base64 32)</li>
+              <li>NEXTAUTH_URL (e.g., http://localhost:3000)</li>
+            </ul>
+          </div>
+          
+          <div className="mt-4 text-sm">
+            <p className="font-semibold">Error Details:</p>
+            <p className="mt-1 font-mono bg-red-100 p-2 rounded">{errorMessage}</p>
+          </div>
+          
+          <div className="mt-4 text-sm">
+            <p>Copy <code className="bg-red-100 px-2 py-1 rounded">.env.example</code> to <code className="bg-red-100 px-2 py-1 rounded">.env.local</code> and fill in your values.</p>
+          </div>
         </div>
       </div>
     )
