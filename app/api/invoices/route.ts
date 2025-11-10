@@ -11,12 +11,16 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     
-    // Safe access with optional chaining
-    const clientId = session.user.role !== 'superadmin' ? session.user.clientId : undefined
+    // Safe access with proper type checking
+    const clientId = session.user.role !== 'superadmin' && session.user.clientId 
+      ? session.user.clientId 
+      : undefined
+    
     const invoices = await getAllInvoices(clientId)
     
     return NextResponse.json(invoices)
   } catch (error) {
+    console.error('Error fetching invoices:', error)
     return NextResponse.json({ error: 'Failed to fetch invoices' }, { status: 500 })
   }
 }
