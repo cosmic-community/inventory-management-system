@@ -8,7 +8,7 @@ export default async function ClientsPage() {
   const session = await getServerSession(authOptions)
   
   // Only superadmins can view clients
-  if (!session || session.user?.role !== 'superadmin') {
+  if (!session?.user || session.user.role !== 'superadmin') {
     redirect('/')
   }
   

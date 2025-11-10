@@ -7,11 +7,12 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session) {
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     
-    const clientId = session.user?.role !== 'superadmin' ? session.user?.clientId : undefined
+    // Safe access with optional chaining
+    const clientId = session.user.role !== 'superadmin' ? session.user.clientId : undefined
     const quotations = await getAllQuotations(clientId)
     
     return NextResponse.json(quotations)

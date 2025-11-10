@@ -7,11 +7,11 @@ export default async function UsersPage() {
   const session = await getServerSession(authOptions)
   
   // Only superadmins and admins can view users
-  if (!session || session.user?.role === 'user') {
+  if (!session?.user || session.user.role === 'user') {
     redirect('/')
   }
   
-  const clientId = session.user?.role !== 'superadmin' ? session.user?.clientId : undefined
+  const clientId = session.user.role !== 'superadmin' ? session.user.clientId : undefined
   const [users, clients] = await Promise.all([
     getAllUsers(clientId),
     getAllClients(),
@@ -114,7 +114,7 @@ export default async function UsersPage() {
                       <button className="text-primary hover:text-blue-700">
                         Edit
                       </button>
-                      {session.user?.role === 'superadmin' && (
+                      {session.user.role === 'superadmin' && (
                         <button className="text-red-600 hover:text-red-700">
                           Delete
                         </button>
