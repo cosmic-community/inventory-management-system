@@ -2,10 +2,11 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Header from '@/components/Header'
 import CosmicBadge from '@/components/CosmicBadge'
+import SessionProvider from '@/components/SessionProvider'
 
 export const metadata: Metadata = {
-  title: 'Inventory Management System',
-  description: 'Track products, manage stock levels, and monitor inventory across multiple locations',
+  title: 'Finovate360 - Enterprise Management Platform',
+  description: 'Complete business management solution with RBAC, client management, inventory, invoicing, and quotations',
 }
 
 export default function RootLayout({
@@ -25,11 +26,13 @@ export default function RootLayout({
         <script src="/dashboard-console-capture.js" />
       </head>
       <body>
-        <Header />
-        <main className="min-h-screen">
-          {children}
-        </main>
-        <CosmicBadge bucketSlug={bucketSlug} />
+        <SessionProvider>
+          <Header />
+          <main className="min-h-screen">
+            {children}
+          </main>
+          <CosmicBadge bucketSlug={bucketSlug} />
+        </SessionProvider>
       </body>
     </html>
   )

@@ -18,6 +18,7 @@ export interface Category extends CosmicObject {
   metadata: {
     name: string;
     description?: string;
+    client?: Client;
   };
 }
 
@@ -31,6 +32,7 @@ export interface Location extends CosmicObject {
       key: string;
       value: string;
     };
+    client?: Client;
   };
 }
 
@@ -54,7 +56,101 @@ export interface Product extends CosmicObject {
       key: string;
       value: string;
     };
+    client?: Client;
   };
+}
+
+// Client interface
+export interface Client extends CosmicObject {
+  type: 'clients';
+  metadata: {
+    client_name: string;
+    contact_email: string;
+    contact_phone?: string;
+    address?: string;
+    logo?: {
+      url: string;
+      imgix_url: string;
+    };
+    active_modules: string[];
+    status: {
+      key: string;
+      value: string;
+    };
+  };
+}
+
+// User interface
+export interface User extends CosmicObject {
+  type: 'users';
+  metadata: {
+    email: string;
+    password_hash: string;
+    full_name: string;
+    role: {
+      key: string;
+      value: string;
+    };
+    client?: Client;
+    active: boolean;
+    phone?: string;
+    avatar?: {
+      url: string;
+      imgix_url: string;
+    };
+  };
+}
+
+// Invoice interface
+export interface Invoice extends CosmicObject {
+  type: 'invoices';
+  metadata: {
+    invoice_number: string;
+    client?: Client;
+    customer_name: string;
+    customer_email?: string;
+    invoice_date: string;
+    due_date: string;
+    items: InvoiceItem[];
+    subtotal: number;
+    tax?: number;
+    total: number;
+    status: {
+      key: string;
+      value: string;
+    };
+    notes?: string;
+  };
+}
+
+// Quotation interface
+export interface Quotation extends CosmicObject {
+  type: 'quotations';
+  metadata: {
+    quote_number: string;
+    client?: Client;
+    customer_name: string;
+    customer_email?: string;
+    quote_date: string;
+    valid_until: string;
+    items: InvoiceItem[];
+    subtotal: number;
+    tax?: number;
+    total: number;
+    status: {
+      key: string;
+      value: string;
+    };
+    notes?: string;
+  };
+}
+
+// Invoice/Quotation item interface
+export interface InvoiceItem {
+  description: string;
+  quantity: number;
+  price: number;
+  total: number;
 }
 
 // Type guards
@@ -70,6 +166,22 @@ export function isLocation(obj: CosmicObject): obj is Location {
   return obj.type === 'locations';
 }
 
+export function isClient(obj: CosmicObject): obj is Client {
+  return obj.type === 'clients';
+}
+
+export function isUser(obj: CosmicObject): obj is User {
+  return obj.type === 'users';
+}
+
+export function isInvoice(obj: CosmicObject): obj is Invoice {
+  return obj.type === 'invoices';
+}
+
+export function isQuotation(obj: CosmicObject): obj is Quotation {
+  return obj.type === 'quotations';
+}
+
 // API response types
 export interface CosmicResponse<T> {
   objects: T[];
@@ -78,11 +190,8 @@ export interface CosmicResponse<T> {
   skip?: number;
 }
 
-// Product status type
-export type ProductStatus = 'active' | 'discontinued' | 'out_of_stock';
-
-// Location type
-export type LocationType = 'warehouse' | 'store' | 'distribution';
+// User roles
+export type UserRole = 'superadmin' | 'admin' | 'user';
 
 // Dashboard stats interface
 export interface DashboardStats {
@@ -92,4 +201,26 @@ export interface DashboardStats {
   totalValue: number;
   categories: number;
   locations: number;
+  clients: number;
+  activeInvoices: number;
+  pendingQuotations: number;
+}
+
+// Permission interface
+export interface Permission {
+  module: string;
+  canView: boolean;
+  canCreate: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
+}
+
+// Session user interface
+export interface SessionUser {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  clientId?: string;
+  permissions: Permission[];
 }

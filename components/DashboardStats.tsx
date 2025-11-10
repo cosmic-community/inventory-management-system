@@ -27,6 +27,30 @@ export default function DashboardStats({ stats }: { stats: Stats }) {
       icon: '💰',
       color: 'bg-purple-50 text-purple-600',
     },
+    {
+      label: 'Total Clients',
+      value: stats.clients,
+      icon: '🏢',
+      color: 'bg-indigo-50 text-indigo-600',
+    },
+    {
+      label: 'Active Invoices',
+      value: stats.activeInvoices,
+      icon: '🧾',
+      color: 'bg-pink-50 text-pink-600',
+    },
+    {
+      label: 'Pending Quotes',
+      value: stats.pendingQuotations,
+      icon: '📋',
+      color: 'bg-orange-50 text-orange-600',
+    },
+    {
+      label: 'Locations',
+      value: stats.locations,
+      icon: '📍',
+      color: 'bg-teal-50 text-teal-600',
+    },
   ]
   
   return (

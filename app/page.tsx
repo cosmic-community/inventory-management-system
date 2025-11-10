@@ -1,14 +1,24 @@
-import { getAllProducts, getAllCategories, getAllLocations } from '@/lib/cosmic'
+import { getAllProducts, getAllCategories, getAllLocations, getAllClients, getAllInvoices, getAllQuotations } from '@/lib/cosmic'
 import { calculateTotalValue, getActiveProductsCount, getLowStockProducts } from '@/lib/utils'
 import DashboardStats from '@/components/DashboardStats'
 import ProductGrid from '@/components/ProductGrid'
 import QuickFilters from '@/components/QuickFilters'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 
 export default async function HomePage() {
-  const [products, categories, locations] = await Promise.all([
-    getAllProducts(),
-    getAllCategories(),
-    getAllLocations(),
+  const session = await getServerSession(authOptions)
+  
+  // Get client-specific data if user is not superadmin
+  const clientId = session?.user?.role !== 'superadmin' ? session?.user?.clientId : undefined
+  
+  const [products, categories, locations, clients, invoices, quotations] = await Promise.all([
+    getAllProducts(clientId),
+    getAllCategories(clientId),
+    getAllLocations(clientId),
+    getAllClients(),
+    getAllInvoices(clientId),
+    getAllQuotations(clientId),
   ])
   
   const stats = {
@@ -18,16 +28,19 @@ export default async function HomePage() {
     totalValue: calculateTotalValue(products),
     categories: categories.length,
     locations: locations.length,
+    clients: clients.length,
+    activeInvoices: invoices.filter(inv => inv.metadata.status.key !== 'paid' && inv.metadata.status.key !== 'cancelled').length,
+    pendingQuotations: quotations.filter(q => q.metadata.status.key === 'sent').length,
   }
   
   return (
     <div className="container py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Inventory Dashboard
+          Finovate360 Dashboard
         </h1>
         <p className="text-gray-600">
-          Track and manage your inventory across all locations
+          Complete business management platform with RBAC and client isolation
         </p>
       </div>
       
