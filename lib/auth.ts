@@ -3,15 +3,6 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { getUserByEmail } from '@/lib/cosmic'
 import bcrypt from 'bcryptjs'
 
-// Validate required environment variables
-if (!process.env.NEXTAUTH_SECRET) {
-  throw new Error('NEXTAUTH_SECRET environment variable is required')
-}
-
-if (!process.env.NEXTAUTH_URL) {
-  throw new Error('NEXTAUTH_URL environment variable is required')
-}
-
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
